@@ -1,0 +1,41 @@
+name:                XMonadConfig
+version:             0.1.0.0
+github:              "MKroboth/XMonadConfig"
+license:             MIT
+author:              "Maximilian Kroboth"
+maintainer:          "maximilian@kroboth-home.at"
+copyright:           "2018 Maximilian Kroboth"
+
+extra-source-files:
+- README.md
+
+synopsis:            My xmonad config
+category:            Simple
+description:         Please see the README on Github at <https://github.com/MKroboth/XMonadConfig#readme>
+
+
+
+ghc-options:
+  - -Wall
+  - -Wno-name-shadowing
+  - -Wno-unused-do-bind
+  - -Wno-type-defaults
+
+dependencies:
+  - X11
+  - base >= 4.7 && < 5
+  - containers
+  - extra
+  - text
+  - filepath
+  - directory
+  - xmonad
+  - xmonad-contrib
+  
+executables:
+  xmonad-config:
+    main: xmonad.hs
+    library-dirs: src/lib
+    source-dirs:
+      - src
+      - src/lib
