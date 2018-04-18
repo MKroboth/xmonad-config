@@ -5,19 +5,26 @@ import XMonad.Util.SpawnOnce
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.SpawnOn
+import XMonad.Actions.PhysicalScreens
 
-  
+import System.IO(Handle)
+import Text.Printf
+
 main :: IO ()
   
 main = do
   mainBar <- spawnMainBar
   spawnXMonad mainBar
 
+spawnMainBar :: IO Handle
+spawnMainBar = spawnPipe $ printf commandFormat font width height
+  where commandFormat = "dzen2 -fn %s -p -w %d -h %d -xs 1 -ta l -e 'onstart=lower'"
+        font = "Hasklig:size=12"
+        screenWidth = 1920 :: Int
+        width = screenWidth `div` 2
+        height = 27 :: Int
 
-spawnMainBar = spawnPipe $ "dzen2 -fn Hasklig:size=12 -p -h 27 -w " ++ (show $ screenWidth /2) ++ " -xs 1 -ta l -e 'onstart=lower'"
-  where screenWidth = 1920
-  
-  
+spawnXMonad :: Handle -> IO ()
 spawnXMonad mainBar = xmonad $ docks $ def
         { modMask = mod4Mask
         , terminal = "/usr/bin/terminology"
@@ -32,10 +39,18 @@ myStartupHook :: X ()
 myStartupHook = do spawnOnce "source $HOME/.profile"
                    spawnOn "9" "thunderbird"
 
+myAdditionalKeys :: [(String, X())]
 myAdditionalKeys =
   [ ("M-x e", safeSpawn "emacs" [])
   , ("M-x w", safeSpawn "vivaldi-stable" [])
-  ]
+  ] ++ workspaceKeys
+  where workspaceKeys =
+          [ (mask ++ "M-" ++ [key], action scr)
+          | (key, scr)  <- zip "wer" [0..]
+          , (action, mask) <- [ (viewScreen, "")
+                              , (sendToScreen, "S-")
+                              ]
+          ]
 
 
 myLogHook mainBar = dynamicLogWithPP def
