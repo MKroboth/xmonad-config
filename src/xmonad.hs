@@ -32,7 +32,7 @@ spawnXMonad mainBar = xmonad $ docks $ def
         , manageHook = manageDocks <+> manageHook def
         , layoutHook = avoidStruts $ layoutHook def
         , logHook = myLogHook mainBar
-        } `additionalKeysP` myAdditionalKeys
+        } `additionalKeysP` myAdditionalKeys `removeKeysP` [ "M-S-q" ]
 
 
 myStartupHook :: X ()
@@ -43,15 +43,18 @@ myAdditionalKeys :: [(String, X())]
 myAdditionalKeys =
   [ ("M-x e", safeSpawn "emacs" [])
   , ("M-x w", safeSpawn "vivaldi-stable" [])
+  , ("M-x i", safeSpawn "bash" ["-c", "/usr/bin/intellij-idea-ultimate-edition"]) -- Execute intellij-idea in bash to prevent the SIGINT bug.
   ] ++ workspaceKeys
   where workspaceKeys =
-          [ (mask ++ "M-" ++ [key], action scr)
+          [ (mask ++ "M-" ++ [key], (action scr))
           | (key, scr)  <- zip "wer" [0..]
-          , (action, mask) <- [ (viewScreen, "")
-                              , (sendToScreen, "S-")
-                              ]
+          , (action, mask) <- actions
           ]
-
+        actions :: [(PhysicalScreen -> X(), String)]
+        actions =
+          [ (viewScreen def, "")
+          , (sendToScreen def, "S-")
+          ]
 
 myLogHook mainBar = dynamicLogWithPP def
   { ppOutput          = hPutStrLn mainBar

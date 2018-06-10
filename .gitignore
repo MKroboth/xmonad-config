@@ -5,3 +5,4 @@
 *.o
 xmonad-x86_64-linux
 .stack-work/
+XMonadConfig.cabal

@@ -29,8 +29,8 @@ dependencies:
   - text
   - filepath
   - directory
-  - xmonad
-  - xmonad-contrib
+  - xmonad >= 0.13
+  - xmonad-contrib >= 0.13
   
 executables:
   xmonad-config:
