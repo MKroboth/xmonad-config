@@ -6,6 +6,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.DynamicLog
 import XMonad.Actions.SpawnOn
 import XMonad.Actions.PhysicalScreens
+import qualified XMonad.StackSet as W
 
 import System.IO(Handle)
 import Text.Printf
@@ -27,9 +28,9 @@ spawnMainBar = spawnPipe $ printf commandFormat font width height
 spawnXMonad :: Handle -> IO ()
 spawnXMonad mainBar = xmonad $ docks $ def
         { modMask = mod4Mask
-        , terminal = "/usr/bin/terminology"
+        , terminal = "/usr/bin/konsole"
         , startupHook = myStartupHook
-        , manageHook = manageDocks <+> manageHook def
+        , manageHook = manageDocks <+> manageSpawn <+> manageHook def
         , layoutHook = avoidStruts $ layoutHook def
         , logHook = myLogHook mainBar
         } `additionalKeysP` myAdditionalKeys `removeKeysP` [ "M-S-q" ]
@@ -45,17 +46,13 @@ myAdditionalKeys =
   , ("M-x w", safeSpawn "vivaldi-stable" [])
   , ("M-x i", safeSpawn "bash" ["-c", "/usr/bin/intellij-idea-ultimate-edition"]) -- Execute intellij-idea in bash to prevent the SIGINT bug.
   ] ++ workspaceKeys
-  where workspaceKeys =
-          [ (mask ++ "M-" ++ [key], (action scr))
-          | (key, scr)  <- zip "wer" [0..]
-          , (action, mask) <- actions
-          ]
-        actions :: [(PhysicalScreen -> X(), String)]
-        actions =
-          [ (viewScreen def, "")
-          , (sendToScreen def, "S-")
-          ]
+  where workspaceKeys = [ (mask ++ "M-" ++ [key], screenWorkspace scr >>= flip whenJust (windows . action))
+                        | (key, scr)  <- zip "wer" screenOrder
+                        , (action, mask) <- [ (W.view, "") , (W.shift, "S-")]
+                        ]
+        screenOrder = [2,0,1] -- was [0..] *** change to match your screen order ***
 
+myLogHook :: Handle -> X()
 myLogHook mainBar = dynamicLogWithPP def
   { ppOutput          = hPutStrLn mainBar
   , ppCurrent         = dzenColor "#303030" "#909090" . pad
