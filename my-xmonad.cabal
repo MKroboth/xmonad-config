@@ -15,6 +15,7 @@ library my-config
                  , MyConfig.Hooks.LayoutHook
                  , MyConfig.Hooks.ManageHook
                  , MyConfig.Hooks.StartupHook
+                 , MyConfig.StatusBar
 
 
 executable my-xmonad

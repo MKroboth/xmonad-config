@@ -3,33 +3,24 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
+-- Import general functionality
+
 import XMonad
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.DynamicLog
-import XMonad.Util.WorkspaceCompare(getSortByXineramaRule)
+import XMonad.Hooks.ManageDocks(docks)
 import XMonad.Util.EZConfig(additionalKeysP)
+
+-- Import config modules
+
 import MyConfig.GeneralConfig
 import MyConfig.Keybindings
 import qualified MyConfig.Applications as Apps
 import MyConfig.Hooks.StartupHook
 import MyConfig.Hooks.LayoutHook
 import MyConfig.Hooks.ManageHook
+import MyConfig.StatusBar
 
 
-
-
--- Status Bars
-
-workspaceBarFlags :: String
-workspaceBarFlags = "-ta l -dock"
-
-dzenConfig :: PP
-dzenConfig = dzenPP { ppCurrent = dzenColor "red" "#efebe7"
-                    , ppVisible = wrap "[" "]"
-                    , ppSort    = getSortByXineramaRule
-                    }
-
--- XMonad main
+-- Execute config
 
 main :: IO ()
 main = xmonadCmd $ def { modMask = mod4Mask
@@ -38,6 +29,5 @@ main = xmonadCmd $ def { modMask = mod4Mask
                      , layoutHook = myLayoutHook
                      , startupHook = myStartupHook
                      , manageHook = myManageHook
-                     , logHook = dynamicLogWithPP dzenConfig
                      } `additionalKeysP` keyConfig
-  where xmonadCmd x = xmonad . docks =<< dzenWithFlags workspaceBarFlags x
+  where xmonadCmd = xmonad . docks . withMyStatusBar
