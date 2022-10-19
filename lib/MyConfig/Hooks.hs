@@ -1,0 +1,3 @@
+-- |
+
+module MyConfig.Hooks where
