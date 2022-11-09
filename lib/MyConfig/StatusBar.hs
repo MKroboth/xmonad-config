@@ -39,7 +39,7 @@ dzenConfig = def { ppCurrent = printCurrentWorkspace
                     , ppHiddenNoWindows = printHiddenWorkspaceNoWindows
                     , ppUrgent = printUrgentWorkspace
                     , ppWsSep = workspaceSeperator
-                    , ppSep = ""
+                    , ppSep = seperator
                     , ppLayout = printLayout
                     , ppSort    = getSortByXineramaRule
                     , ppTitle = ("^bg(#324c80)" ++) . dzenEscape . pad
